@@ -4,7 +4,7 @@
   tasks:
     - name: Ensure project is present
       ansible.builtin.git:
-        repo: https://github.com/YOUR_USERNAME/github-dashboard.git
+        repo: https://github.com/RakshitYadav09/github-dashboard.git
         dest: ./github-dashboard
         clone: yes
       ignore_errors: true
