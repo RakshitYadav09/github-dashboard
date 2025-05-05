@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GitHub Repo Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f7f7f7; }
+    #output { margin-top: 20px; }
+    input, button { padding: 8px; font-size: 16px; }
+    canvas { max-width: 600px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h1>GitHub Repository Dashboard</h1>
+  <input type="text" id="repo" placeholder="Enter GitHub Repo URL"/>
+  <button onclick="analyze()">Analyze</button>
+  <div id="output">
+    <p id="info"></p>
+    <canvas id="chart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    function analyze() {
+      const repo = document.getElementById("repo").value;
+      fetch("http://localhost:5000/repo-info", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ repo_url: repo })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById("info").innerText = "Error: " + data.error;
+          return;
+        }
+        document.getElementById("info").innerText = `Repo: ${data.name}`;
+
+        const ctx = document.getElementById("chart").getContext("2d");
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Stars', 'Forks', 'Commits', 'Contributors'],
+            datasets: [{
+              label: 'GitHub Stats',
+              data: [data.stars, data.forks, data.commits, data.contributors],
+              backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#FF5722']
+            }]
+          },
+          options: { responsive: true }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
